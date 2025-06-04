@@ -2,13 +2,12 @@ package org.jdbc;
 
 import java.sql.*;
 
+import org.jdbc.Util.DatabaseConn;
+
 public class ExJdbc {
     public static void main(String[] args) {
-        String url = "jdbc:mysql://localhost:3306/java_course?serverTimezone=UTC";
-        String username = "root";
-        String password = "caca";
 
-        try (Connection conn = DriverManager.getConnection(url, username, password);
+        try (Connection conn = DatabaseConn.getInstance();
                 Statement stmt = conn.createStatement();
                 ResultSet r = stmt.executeQuery("SELECT * FROM products")) {
 
