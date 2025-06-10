@@ -33,6 +33,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
             }
             
         } catch (SQLException e ) {
+            //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
         return products;
