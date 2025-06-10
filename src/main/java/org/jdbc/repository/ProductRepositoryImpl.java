@@ -38,7 +38,6 @@ public class ProductRepositoryImpl implements Repository<Product> {
         return products;
     }
 
-    
     @Override
     public Product forId(Long id) {
         // TODO Auto-generated method stub
