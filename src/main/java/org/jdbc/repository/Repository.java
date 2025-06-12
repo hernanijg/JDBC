@@ -8,6 +8,5 @@ public interface Repository<T> {
     T forId(Long id);
     
     void save(T t);
-
     void delete(Long id);
 }
