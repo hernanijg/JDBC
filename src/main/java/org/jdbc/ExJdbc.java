@@ -13,8 +13,8 @@ public class ExJdbc {
         try (Connection conn = DatabaseConn.getInstance()) {
 
             Repository<Product> repository = new ProductRepositoryImpl();
-            repository.showL().forEach(product -> System.out.println("product.getName()  = " + product.getName() ));
-
+            repository.showL().forEach(System.out::println);
+            System.out.println(repository.forId(1L));
         } catch (SQLException e) {
             e.printStackTrace();
         }

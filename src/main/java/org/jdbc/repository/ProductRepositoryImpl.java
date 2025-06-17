@@ -1,9 +1,6 @@
 package org.jdbc.repository;
 
-import java.sql.Statement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,25 +21,35 @@ public class ProductRepositoryImpl implements Repository<Product> {
             ResultSet rs = stmt.executeQuery("SELECT * FROM products")) {
             
             while (rs.next()) {
-                Product p = new Product();
-                p.setId(rs.getLong("id"));
-                p.setName(rs.getString("name"));
-                p.setPrice(rs.getInt("price"));
-                p.setRegisterDate(rs.getDate("register_date"));
+                Product p = getProduct(rs);
                 products.add(p);
             }
-            
+
         } catch (SQLException e ) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
         return products;
     }
-
     @Override
     public Product forId(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'forId'");
+        Product product = null;
+
+        try (   PreparedStatement stmt = getConnection()
+                .prepareStatement("SELECT * FROM products WHERE id = ?" )){
+
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                product = getProduct(rs);
+            }
+
+            rs.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return product;
     }
 
     @Override
@@ -55,6 +62,16 @@ public class ProductRepositoryImpl implements Repository<Product> {
     public void delete(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    }
+
+
+    private static Product getProduct(ResultSet rs) throws SQLException {
+        Product p = new Product();
+        p.setId(rs.getLong("id"));
+        p.setName(rs.getString("name"));
+        p.setPrice(rs.getInt("price"));
+        p.setRegisterDate(rs.getDate("register_date"));
+        return p;
     }
     
 }
