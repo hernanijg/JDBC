@@ -37,15 +37,14 @@ public class ProductRepositoryImpl implements Repository<Product> {
 
         try (   PreparedStatement stmt = getConnection()
                 .prepareStatement("SELECT * FROM products WHERE id = ?" )){
-
             stmt.setLong(1, id);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                product = getProduct(rs);
+            // AUTOCLOSE
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    product = getProduct(rs);
+                }
             }
 
-            rs.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -54,14 +53,37 @@ public class ProductRepositoryImpl implements Repository<Product> {
 
     @Override
     public void save(Product t) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        String sql;
+        if (t.getId() != null && t.getId() > 0) {
+            sql = "UPDATE products SET name=?, price=? WHERE id=?";
+        } else {
+            sql = "INSERT INTO products(name, price, register_date) VALUES(?,?,?)";
+        }
+
+        try(PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setString(1, t.getName());
+            stmt.setLong(2, t.getPrice());
+
+            if (t.getId() != null && t.getId() > 0) {
+                stmt.setLong(3, t.getId());
+            } else {
+                stmt.setDate(3, new Date(t.getRegisterDate().getTime()));
+            }
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        try(PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM products WHERE id=?")) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
