@@ -14,7 +14,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
     }
 
     @Override
-    public List<Product> showL() {
+    public List<Product> showL() throws SQLException {
         List<Product> products = new ArrayList<>();
         
         try(Statement stmt = getConnection().createStatement();
@@ -25,14 +25,12 @@ public class ProductRepositoryImpl implements Repository<Product> {
                 products.add(p);
             }
 
-        } catch (SQLException e ) {
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
         }
         return products;
     }
+
     @Override
-    public Product forId(Long id) {
+    public Product forId(Long id) throws SQLException {
         Product product = null;
 
         try (   PreparedStatement stmt = getConnection()
@@ -45,44 +43,39 @@ public class ProductRepositoryImpl implements Repository<Product> {
                 }
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
         return product;
     }
 
     @Override
-    public void save(Product t) {
+    public void save(Product t) throws SQLException {
         String sql;
         if (t.getId() != null && t.getId() > 0) {
-            sql = "UPDATE products SET name=?, price=? WHERE id=?";
+            sql = "UPDATE products SET name=?, price=?, sku=? WHERE id=?";
         } else {
-            sql = "INSERT INTO products(name, price, register_date) VALUES(?,?,?)";
+            sql = "INSERT INTO products(name, price, sku, register_date) VALUES(?,?,?,?)";
         }
 
         try(PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, t.getName());
             stmt.setLong(2, t.getPrice());
+            stmt.setString(3, t.getSku());
 
             if (t.getId() != null && t.getId() > 0) {
-                stmt.setLong(3, t.getId());
+                stmt.setLong(4, t.getId());
             } else {
-                stmt.setDate(3, new Date(t.getRegisterDate().getTime()));
+                stmt.setDate(4, new Date(t.getRegisterDate().getTime()));
             }
 
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws SQLException {
         try(PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM products WHERE id=?")) {
             stmt.setLong(1, id);
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -93,6 +86,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
         p.setName(rs.getString("name"));
         p.setPrice(rs.getInt("price"));
         p.setRegisterDate(rs.getDate("register_date"));
+        p.setSku(rs.getString("sku"));
         return p;
     }
     

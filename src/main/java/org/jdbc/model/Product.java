@@ -9,6 +9,7 @@ public class Product {
     private String name;
     private Integer price;
     private Date registerDate;
+    private String sku;
 
     public Product() {}
 
@@ -51,6 +52,14 @@ public class Product {
         this.registerDate = registerDate;
     }
 
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -58,6 +67,7 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", registerDate=" + registerDate +
+                ", sku=" + sku +
                 '}';
     }
 }
