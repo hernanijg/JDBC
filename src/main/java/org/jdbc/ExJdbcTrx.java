@@ -13,7 +13,6 @@ public class ExJdbcTrx {
         try (Connection conn = DatabaseConn.getInstance()) {
             if(conn.getAutoCommit())
                 conn.setAutoCommit(false);
-
             try {
                 Repository<Product> repository = new ProductRepositoryImpl();
                 System.out.println("=================== Show List ================");
